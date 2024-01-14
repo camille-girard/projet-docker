@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  nginx1:
+    image: nginx:latest
+    volumes:
+      - ./website-a:/var/www/html
+      - ./website-a/nginx-conf/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+
+  nginx2:
+    image: nginx:latest
+    volumes:
+      - ./website-b:/var/www/html
+      - ./website-b/nginx-conf/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8081:80"
+    networks:
+      - app-network
+
+  website-a:
+    build:
+      context: ./website-a
+      dockerfile: Dockerfile
+    container_name: website-a
+    environment:
+      SERVICE_NAME: website-a
+      SERVICE_TAGS: dev
+    volumes:
+      - ./website-a:/var/www/html
+    networks:
+      - app-network
+
+  website-b:
+    build:
+      context: ./website-b
+      dockerfile: Dockerfile
+    container_name: website-b
+    environment:
+      SERVICE_NAME: website-b
+      SERVICE_TAGS: dev
+    volumes:
+      - ./website-b:/var/www/html
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: laravel_database
+      MYSQL_USER: laravel_user
+      MYSQL_PASSWORD: laravel_password
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+#Networks
+networks:
+  app-network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
