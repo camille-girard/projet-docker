@@ -1,2 +1,4 @@
 /.idea/
 mysql-data/*
+/website-a/node_modules/
+/website-b/node_modules/
